@@ -1,0 +1,27 @@
+{
+  "name": "plumbing.js",
+  "version": "0.0.0",
+  "description": "Functional graph computation for javascript",
+  "main": "src/graph.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/log0ymxm/plumbing.js"
+  },
+  "keywords": [
+    "functional",
+    "graph",
+    "computation"
+  ],
+  "author": "Paul English",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/log0ymxm/plumbing.js/issues"
+  },
+  "homepage": "https://github.com/log0ymxm/plumbing.js",
+  "devDependencies": {
+    "mocha": "~1.17.0"
+  }
+}

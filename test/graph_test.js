@@ -1,32 +1,26 @@
 var assert = require('assert');
 var Graph = require('../src/graph');
 var utils = require('../src/utils');
+var test_utils = require('./test_utils');
 
-describe("Graph basics", function() {
-  var sum = function(arr, map_fn) {
-    if (typeof map_fn !== "undefined") {
-      arr = arr.map(map_fn);
-    }
-    return arr.reduce(function(acc, i) {return acc + i;});
-  };
-
+describe("Eager graph compilation", function() {
   var stats = function(xs) {
     var n = xs.length;
-    var m = sum(xs) / n;
-    var m2 = sum(xs, function(i) {return i * i;}) / n;
+    var m = test_utils.sum(xs) / n;
+    var m2 = test_utils.sum(xs, function(i) {return i * i;}) / n;
     var v = m2 - (m * m);
     return {
-      n: n, // count
-      m: m, // mean
-      m2: m2, // mean-square
-      v: v // variance
+      n: n,    // count
+      m: m,    // mean
+      m2: m2,  // mean-square
+      v: v     // variance
     };
   };
 
   var stats_graph = {
     n: function(xs) {return xs.length;},
-    m: function(xs, n) {return sum(xs) / n;},
-    m2: function(xs, n) {return sum(xs, function(i) {return i * i;}) / n;},
+    m: function(xs, n) {return test_utils.sum(xs) / n;},
+    m2: function(xs, n) {return test_utils.sum(xs, function(i) {return i * i;}) / n;},
     v: function(m, m2) {return m2 - (m * m);}
   };
 
@@ -96,5 +90,23 @@ describe("Graph basics", function() {
     assert.equal(output.m2, (25 / 2));
     assert.equal(output.v, (7 / 2));
     assert.equal(output.sd, Math.sqrt(3.5));
+  });
+  
+  it("should be able to eager compile a set of dependent functions that aren't in order", function() {
+    var graph = new Graph();
+    var stats_graph = {
+      n: function(xs) {return xs.length;},
+      v: function(m, m2) {return m2 - (m * m);},
+      m2: function(xs, n) {return test_utils.sum(xs, function(i) {return i * i;}) / n;},
+      m: function(xs, n) {return test_utils.sum(xs) / n;}
+    };
+    var stats_eager = graph.eagerCompile(stats_graph);
+    var output = stats_eager({xs: [1, 2, 3, 6]});
+
+    assert.equal(Object.keys(output).length, 4);
+    assert.equal(output.n, 4);
+    assert.equal(output.m, 3);
+    assert.equal(output.m2, (25 / 2));
+    assert.equal(output.v, (7 / 2));
   });
 });

@@ -23,5 +23,8 @@
   "homepage": "https://github.com/log0ymxm/plumbing.js",
   "devDependencies": {
     "mocha": "~1.17.0"
+  },
+  "dependencies": {
+    "es6-promise": "~0.1.1"
   }
 }
